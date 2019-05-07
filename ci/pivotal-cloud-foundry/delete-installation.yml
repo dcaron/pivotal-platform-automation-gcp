@@ -1,0 +1,122 @@
+---
+resource_types:
+
+- name: gcs
+  type: docker-image
+  source:
+    repository: frodenas/gcs-resource
+
+resources:
+- name: one-time-trigger
+  type: time
+  source:
+    interval: 999999h
+
+- name: config
+  type: git
+  source:
+    uri: ((config-uri))
+    branch: master
+
+- name: state
+  type: gcs
+  source:
+    versioned_file: state.yml
+    bucket: ((gcs-bucket))
+    json_key: |
+      ((gcp-credentials))
+
+
+- name: platform-automation-tasks
+  type: gcs
+  source:
+    regexp: platform-automation-tasks-(.*).zip
+    bucket: ((gcs-bucket))
+    json_key: |
+      ((gcp-credentials))
+
+- name: platform-automation-image
+  type: gcs
+  source:
+    regexp: platform-automation-image-(.*).tgz
+    bucket: ((gcs-bucket))
+    json_key: |
+      ((gcp-credentials))
+
+jobs:
+
+- name: delete-installation
+  serial: true
+  plan:
+  - aggregate:
+    - get: platform-automation-image
+      params:
+        unpack: true
+    - get: platform-automation-tasks
+      params:
+        unpack: true
+    - get: config
+    - get: one-time-trigger
+  - task: credhub-interpolate-config
+    image: platform-automation-image
+    file: platform-automation-tasks/tasks/credhub-interpolate.yml
+    params:
+      CREDHUB_CA_CERT: ((credhub-ca-cert))
+      CREDHUB_CLIENT: ((credhub-client))
+      CREDHUB_SECRET: ((credhub-secret))
+      CREDHUB_SERVER: ((credhub-server))
+      PREFIX: /
+      INTERPOLATION_PATH: config
+    input_mapping:
+      files: config
+    output_mapping:
+      interpolated-files: config
+  - task: delete-installation
+    image: platform-automation-image
+    file: platform-automation-tasks/tasks/delete-installation.yml
+    input_mapping:
+      env: config
+    params:
+      ENV_FILE: config/ops-manager/env.yml
+
+
+
+- name: delete-opsman-vm
+  serial: true
+  plan:
+  - aggregate:
+    - get: platform-automation-image
+      params:
+        unpack: true
+      passed:
+        - delete-installation
+      trigger: true
+    - get: platform-automation-tasks
+      params:
+        unpack: true
+    - get: config
+    - get: state
+  - task: credhub-interpolate-config
+    image: platform-automation-image
+    file: platform-automation-tasks/tasks/credhub-interpolate.yml
+    params:
+      CREDHUB_CA_CERT: ((credhub-ca-cert))
+      CREDHUB_CLIENT: ((credhub-client))
+      CREDHUB_SECRET: ((credhub-secret))
+      CREDHUB_SERVER: ((credhub-server))
+      PREFIX: /
+      INTERPOLATION_PATH: config
+    input_mapping:
+      files: config
+    output_mapping:
+      interpolated-files: config
+  - task: delete-installation
+    image: platform-automation-image
+    file: platform-automation-tasks/tasks/delete-vm.yml
+    input_mapping:
+      env: config
+      state: state
+    params:
+      STATE_FILE: state.yml
+      OPSMAN_CONFIG_FILE: config/ops-manager/2.5/gcp/config-vm.yml
+  - put: state
