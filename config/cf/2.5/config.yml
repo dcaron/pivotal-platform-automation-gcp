@@ -21,6 +21,11 @@ product-properties:
       certificate:
         cert_pem: ((domain-crt))
         private_key_pem: ((domain-key))
+  .properties.metric_registrar_enabled:
+    value: true
+  .properties.metric_registrar_scrape_interval_in_seconds:
+    value: 15
+   
   .properties.haproxy_forward_tls:
     value: disable
   .ha_proxy.skip_cert_verify:
@@ -41,30 +46,35 @@ product-properties:
     value: anyone@someone.com
 errand-config:
   deploy-autoscaler:
-    post-deploy-state: false
+    post-deploy-state: true
   deploy-notifications:
-    post-deploy-state: false
+    post-deploy-state: true
   deploy-notifications-ui:
-    post-deploy-state: false
+    post-deploy-state: true
   nfsbrokerpush:
     post-deploy-state: false
   test-autoscaling:
-    post-deploy-state: false
+    post-deploy-state: true
   smoke_tests:
-    post-deploy-state: false
+    post-deploy-state: true
   push-apps-manager:
     post-deploy-state: true
   push-usage-service:
     post-deploy-state: true
+  metric_registrar_smoke_test:
+    post-deploy-state: true
+
 resource-config:
   compute:
     instances: 3
     instance_type:
       id: 2xlarge.disk
   control:
+    instances: 2
     elb_names:
     - tcp:((subdomain-name))-cf-ssh
   router:
+    instances: 2
     elb_names:
     - tcp:((subdomain-name))-cf-ws
     - http:((subdomain-name))-httpslb
