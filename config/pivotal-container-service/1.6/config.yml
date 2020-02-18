@@ -49,6 +49,8 @@ product-properties:
     - public_ip
   .properties.telemetry_selector:
     value: disabled
+  .properties.telemetry_installation_purpose_selector:
+    value: not_provided
 errand-config:
   upgrade-all-service-instances:
     post-deploy-state: true
