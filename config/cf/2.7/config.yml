@@ -13,8 +13,8 @@ product-properties:
     value: sys.((subdomain-name)).((domain-name))
   .cloud_controller.apps_domain:
     value: apps.((subdomain-name)).((domain-name))
-  .properties.stack_migration_acknowledgement  :
-    value: X
+#  .properties.stack_migration_acknowledgement  :
+#    value: X
   .properties.networking_poe_ssl_certs:
     value:
     - name: certificate
@@ -36,12 +36,12 @@ product-properties:
     value:
       cert_pem: ((domain-crt))
       private_key_pem: ((domain-key))
-  .properties.credhub_key_encryption_passwords:
-    value:
-    - name: default
-      key:
-        secret: ((om-password))
-      primary: true
+#  .properties.credhub_key_encryption_passwords:
+#    value:
+#    - name: default
+#      key:
+#        secret: ((om-password))
+#      primary: true
   .mysql_monitor.recipient_email:
     value: anyone@someone.com
 errand-config:
