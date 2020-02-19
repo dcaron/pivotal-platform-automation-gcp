@@ -1,13 +1,13 @@
 product-name: p_spring-cloud-services
-product-properties:
-  .deploy-service-broker.broker_max_instances:
-    value: 100
-  .deploy-service-broker.disable_cert_check:
-    value: true 
-  .deploy-service-broker.secure_credentials:
-    value: false
-  .register-service-broker.enable_global_access:
-    value: true
+#product-properties:
+#  .deploy-service-broker.broker_max_instances:
+#    value: 100
+#  .deploy-service-broker.disable_cert_check:
+#    value: true
+#  .deploy-service-broker.secure_credentials:
+#    value: false
+#  .register-service-broker.enable_global_access:
+#    value: true
 network-properties:
   network:
     name: pas
