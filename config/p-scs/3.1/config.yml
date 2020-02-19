@@ -1,4 +1,4 @@
-product-name: p-spring-cloud-services
+product-name: p_spring-cloud-services
 product-properties:
   .deploy-service-broker.broker_max_instances:
     value: 100
