@@ -76,3 +76,5 @@ resource-config:
     elb_names:
     - tcp:((subdomain-name))-cf-ws
     - http:((subdomain-name))-httpslb
+  credhub:
+    instances: 1
