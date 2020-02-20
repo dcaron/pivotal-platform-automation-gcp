@@ -1,0 +1,6 @@
+---
+pivnet-api-token: ((pivnet-api-token))
+pivnet-file-glob: Pivotal_Single_Sign-On_Service_*.pivotal
+pivnet-product-slug: p-identity
+product-version-regex: 1\.(.*)\.(.*)
+stemcell-iaas: google

@@ -1,0 +1,26 @@
+product-name: Pivotal_Single_Sign-On_Service
+network-properties:
+  network:
+    name: pas
+  other_availability_zones:
+  - name: ((az1))
+  - name: ((az2))
+  - name: ((az3))
+  singleton_availability_zone:
+    name: ((az1))
+resource-config:
+  deploy-service-broker:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: true
+  destroy-broker:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: true
+errand-config:
+  deploy-service-broker:
+    post-deploy-state: true
+  destroy-broker:
+    pre-delete-state: true

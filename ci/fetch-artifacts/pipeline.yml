@@ -35,6 +35,23 @@ resources:
     json_key: |
       ((gcp-credentials))
 
+- name: sso-product
+  type: gcs
+  source:
+    regexp: Pivotal_Single_Sign-On_Service_(.*).pivotal
+    bucket: ((gcs-bucket))
+    json_key: |
+      ((gcp-credentials))
+
+- name: sso-stemcell
+  type: gcs
+  source:
+    regexp: sso-stemcell/light-bosh-stemcell-(.*)-google.*\.tgz
+    bucket: ((gcs-bucket))
+    json_key: |
+      ((gcp-credentials))
+
+
 - name: pks-product
   type: gcs
   source:
@@ -615,7 +632,7 @@ jobs:
 #        file: scs-stemcell/*.tgz
 
 
-- name: fetch-scs3
+- name: fetch-sso
   serial_groups: [ fetch-ops ]
   plan:
   - aggregate:
@@ -646,17 +663,56 @@ jobs:
     image: platform-automation-image
     file: platform-automation-tasks/tasks/download-product.yml
     params:
-      CONFIG_FILE: config/p-scs/3.1/config-pivnet.yml
-    output_mapping: {downloaded-stemcell: scs3-stemcell}
+      CONFIG_FILE: config/p-identity/1/config-pivnet.yml
+    output_mapping: {downloaded-stemcell: sso-stemcell}
   - aggregate:
-    - put: scs3-product
+    - put: sso-product
       params:
         file: downloaded-product/*.pivotal
-    - put: scs3-stemcell
+    - put: sso-stemcell
       params:
-        file: scs3-stemcell/*.tgz
+        file: sso-stemcell/*.tgz
 
-
+- name: fetch-scs3
+  serial_groups: [ fetch-ops ]
+  plan:
+    - aggregate:
+        - get: every-two-days
+          trigger: true
+        - get: platform-automation-image
+          params:
+            unpack: true
+        - get: platform-automation-tasks
+          params:
+            unpack: true
+        - get: config
+    - task: credhub-interpolate-config
+      image: platform-automation-image
+      file: platform-automation-tasks/tasks/credhub-interpolate.yml
+      params:
+        CREDHUB_CA_CERT: ((credhub-ca-cert))
+        CREDHUB_CLIENT: ((credhub-client))
+        CREDHUB_SECRET: ((credhub-secret))
+        CREDHUB_SERVER: ((credhub-server))
+        PREFIX: /
+        INTERPOLATION_PATH: config
+      input_mapping:
+        files: config
+      output_mapping:
+        interpolated-files: config
+    - task: download-scs-product-and-stemcell
+      image: platform-automation-image
+      file: platform-automation-tasks/tasks/download-product.yml
+      params:
+        CONFIG_FILE: config/p-scs/3.1/config-pivnet.yml
+      output_mapping: {downloaded-stemcell: scs3-stemcell}
+    - aggregate:
+        - put: scs3-product
+          params:
+            file: downloaded-product/*.pivotal
+        - put: scs3-stemcell
+          params:
+            file: scs3-stemcell/*.tgz
 #- name: fetch-pasw
 #  serial_groups: [ fetch-ops ]
 #  plan:
