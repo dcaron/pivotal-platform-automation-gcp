@@ -30,6 +30,8 @@ product-properties:
     - ((az3))
   .properties.plan1_selector.active.worker_instances:
     value: 1
+  .properties.plan2_selector:
+    value: Plan Active
   .properties.plan2_selector.active.master_az_placement:
     value:
       - ((az1))
