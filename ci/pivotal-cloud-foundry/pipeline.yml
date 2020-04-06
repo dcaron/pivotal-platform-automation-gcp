@@ -247,7 +247,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -317,7 +317,7 @@ jobs:
 - name: export-installation
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: one-time-trigger
       passed: [ install-opsman ]
     - get: daily-trigger
@@ -359,7 +359,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: one-time-trigger
       passed: [ install-opsman ]
     - get: platform-automation-image
@@ -425,7 +425,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -473,7 +473,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -521,7 +521,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -569,7 +569,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -617,7 +617,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -665,7 +665,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -714,7 +714,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -763,7 +763,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -811,7 +811,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -859,7 +859,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -908,7 +908,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -959,7 +959,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1003,7 +1003,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1047,7 +1047,7 @@ jobs:
   serial_groups: [ install ]
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1091,7 +1091,7 @@ jobs:
   serial_groups: [ install ]
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1135,7 +1135,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1179,7 +1179,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1223,7 +1223,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1268,7 +1268,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1312,7 +1312,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1356,7 +1356,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1401,7 +1401,7 @@ jobs:
   serial: true
   serial_groups: [ install ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1445,7 +1445,7 @@ jobs:
 - name: upload-stemcells
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -1571,7 +1571,7 @@ jobs:
 - name: apply-product-changes
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
