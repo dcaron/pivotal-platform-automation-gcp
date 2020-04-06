@@ -47,7 +47,7 @@ jobs:
 - name: delete-installation
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true
@@ -83,7 +83,7 @@ jobs:
 - name: delete-opsman-vm
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: platform-automation-image
       params:
         unpack: true

@@ -268,7 +268,7 @@ jobs:
 - name: fetch-opsman
   serial_groups: [ fetch-ops ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: every-two-days
       trigger: true
     - get: platform-automation-image
@@ -297,7 +297,7 @@ jobs:
     file: platform-automation-tasks/tasks/download-product.yml
     params:
       CONFIG_FILE: config/ops-manager/2.8/gcp/config-pivnet.yml
-  - aggregate:
+  - in_parallel:
     - put: opsman-product
       params:
         file: downloaded-product/*
@@ -305,7 +305,7 @@ jobs:
 - name: fetch-pks
   serial_groups: [ fetch-ops ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: every-two-days
       trigger: true
     - get: platform-automation-image
@@ -335,7 +335,7 @@ jobs:
     params:
       CONFIG_FILE: config/pivotal-container-service/1.7/config-pivnet.yml
     output_mapping: {downloaded-stemcell: pks-stemcell}
-  - aggregate:
+  - in_parallel:
     - put: pks-product
       params:
         file: downloaded-product/*.pivotal
@@ -347,7 +347,7 @@ jobs:
 - name: fetch-harbor
   serial_groups: [ fetch-ops ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: every-two-days
       trigger: true
     - get: platform-automation-image
@@ -377,7 +377,7 @@ jobs:
     params:
       CONFIG_FILE: config/harbor-container-registry/1.10/config-pivnet.yml
     output_mapping: {downloaded-stemcell: harbor-stemcell}
-  - aggregate:
+  - in_parallel:
     - put: harbor-product
       params:
         file: downloaded-product/*.pivotal
@@ -388,7 +388,7 @@ jobs:
 - name: fetch-pas
   serial_groups: [ fetch-ops ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: every-two-days
       trigger: true
     - get: platform-automation-image
@@ -418,7 +418,7 @@ jobs:
     params:
       CONFIG_FILE: config/cf/2.8/config-pivnet.yml
     output_mapping: {downloaded-stemcell: pas-stemcell}
-  - aggregate:
+  - in_parallel:
     - put: pas-product
       params:
         file: downloaded-product/*.pivotal
@@ -429,7 +429,7 @@ jobs:
 - name: fetch-healthwatch
   serial_groups: [ fetch-ops ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: every-two-days
       trigger: true
     - get: platform-automation-image
@@ -459,7 +459,7 @@ jobs:
     params:
       CONFIG_FILE: config/p-healthwatch/1.7/config-pivnet.yml
     output_mapping: {downloaded-stemcell: healthwatch-stemcell}
-  - aggregate:
+  - in_parallel:
     - put: healthwatch-product
       params:
         file: downloaded-product/*.pivotal
@@ -470,7 +470,7 @@ jobs:
 #- name: fetch-jenkins
 #  serial_groups: [ fetch-ops ]
 #  plan:
-#  - aggregate:
+#  - in_parallel:
 #    - get: every-two-days
 #      trigger: true
 #    - get: platform-automation-image
@@ -500,7 +500,7 @@ jobs:
 #    params:
 #      CONFIG_FILE: config/jenkins/1.0/config-pivnet.yml
 #    output_mapping: {downloaded-stemcell: jenkins-stemcell}
-#  - aggregate:
+#  - in_parallel:
 #    - put: jenkins-product
 #      params:
 #        file: downloaded-product/*.pivotal
@@ -512,7 +512,7 @@ jobs:
 - name: fetch-redis
   serial_groups: [ fetch-ops ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: every-two-days
       trigger: true
     - get: platform-automation-image
@@ -542,7 +542,7 @@ jobs:
     params:
       CONFIG_FILE: config/p-redis/2.3/config-pivnet.yml
     output_mapping: {downloaded-stemcell: redis-stemcell}
-  - aggregate:
+  - in_parallel:
     - put: redis-product
       params:
         file: downloaded-product/*.pivotal
@@ -553,7 +553,7 @@ jobs:
 - name: fetch-rabbitmq
   serial_groups: [ fetch-ops ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: every-two-days
       trigger: true
     - get: platform-automation-image
@@ -583,7 +583,7 @@ jobs:
     params:
       CONFIG_FILE: config/p-rabbitmq/1.18/config-pivnet.yml
     output_mapping: {downloaded-stemcell: rabbitmq-stemcell}
-  - aggregate:
+  - in_parallel:
     - put: rabbitmq-product
       params:
         file: downloaded-product/*.pivotal
@@ -594,7 +594,7 @@ jobs:
 #- name: fetch-scs
 #  serial_groups: [ fetch-ops ]
 #  plan:
-#  - aggregate:
+#  - in_parallel:
 #    - get: every-two-days
 #      trigger: true
 #    - get: platform-automation-image
@@ -624,7 +624,7 @@ jobs:
 #    params:
 #      CONFIG_FILE: config/p-scs/3.1/config-pivnet.yml
 #    output_mapping: {downloaded-stemcell: scs-stemcell}
-#  - aggregate:
+#  - in_parallel:
 #    - put: scs-product
 #      params:
 #        file: downloaded-product/*.pivotal
@@ -636,7 +636,7 @@ jobs:
 - name: fetch-sso
   serial_groups: [ fetch-ops ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: every-two-days
       trigger: true
     - get: platform-automation-image
@@ -666,7 +666,7 @@ jobs:
     params:
       CONFIG_FILE: config/p-identity/1/config-pivnet.yml
     output_mapping: {downloaded-stemcell: sso-stemcell}
-  - aggregate:
+  - in_parallel:
     - put: sso-product
       params:
         file: downloaded-product/*.pivotal
@@ -677,7 +677,7 @@ jobs:
 - name: fetch-scs3
   serial_groups: [ fetch-ops ]
   plan:
-    - aggregate:
+    - in_parallel:
         - get: every-two-days
           trigger: true
         - get: platform-automation-image
@@ -707,7 +707,7 @@ jobs:
       params:
         CONFIG_FILE: config/p-scs/3.1/config-pivnet.yml
       output_mapping: {downloaded-stemcell: scs3-stemcell}
-    - aggregate:
+    - in_parallel:
         - put: scs3-product
           params:
             file: downloaded-product/*.pivotal
@@ -717,7 +717,7 @@ jobs:
 #- name: fetch-pasw
 #  serial_groups: [ fetch-ops ]
 #  plan:
-#  - aggregate:
+#  - in_parallel:
 #    - get: every-two-days
 #      trigger: true
 #    - get: platform-automation-image
@@ -747,7 +747,7 @@ jobs:
 #    params:
 #      CONFIG_FILE: config/pasw/2.7/config-pivnet.yml
 #    output_mapping: {downloaded-stemcell: pasw-stemcell}
-#  - aggregate:
+#  - in_parallel:
 #    - put: pasw-product
 #      params:
 #        file: downloaded-product/*.pivotal
@@ -758,7 +758,7 @@ jobs:
 - name: fetch-pcfmetrics
   serial_groups: [ fetch-ops ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: every-two-days
       trigger: true
     - get: platform-automation-image
@@ -788,7 +788,7 @@ jobs:
     params:
       CONFIG_FILE: config/pcfmetrics/1.6/config-pivnet.yml
     output_mapping: {downloaded-stemcell: pcfmetrics-stemcell}
-  - aggregate:
+  - in_parallel:
     - put: pcfmetrics-product
       params:
         file: downloaded-product/*.pivotal
@@ -799,7 +799,7 @@ jobs:
 - name: fetch-mysql
   serial_groups: [ fetch-ops ]
   plan:
-  - aggregate:
+  - in_parallel:
     - get: every-two-days
       trigger: true
     - get: platform-automation-image
@@ -829,7 +829,7 @@ jobs:
     params:
       CONFIG_FILE: config/pivotal-mysql/2.7/config-pivnet.yml
     output_mapping: {downloaded-stemcell: mysql-stemcell}
-  - aggregate:
+  - in_parallel:
     - put: mysql-product
       params:
         file: downloaded-product/*.pivotal
@@ -845,7 +845,7 @@ jobs:
   plan:
   - get: platform-automation-pivnet
     trigger: true
-  - aggregate:
+  - in_parallel:
     - put: platform-automation-tasks
       params:
         file: platform-automation-pivnet/*tasks*.zip
