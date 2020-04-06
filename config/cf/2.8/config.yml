@@ -1,7 +1,7 @@
 product-name: cf
 network-properties:
   singleton_availability_zone:
-    name: ((az1))
+    name: ((az3))
   other_availability_zones:
   - name: ((az1))
   - name: ((az2))

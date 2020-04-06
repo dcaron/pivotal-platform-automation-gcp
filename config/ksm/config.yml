@@ -1,0 +1,62 @@
+product-name: ksm
+network-properties:
+  network:
+    name: pas
+  other_availability_zones:
+  - name: ((az1))
+  - name: ((az2))
+  - name: ((az3))
+  singleton_availability_zone:
+    name: ((az3))
+product-properties:
+  .properties.access_key_id:
+    value: ((ksm-storage-access-key-id))
+  .properties.bucket_name:
+    value: ((ksm-storage-bucket-name))
+  .properties.ca_data:
+    value: ((ksm-k8s-ca-data))
+  .properties.endpoint:
+    value: ((ksm-storage-endpoint))
+  .properties.k8s_port:
+    value: ((ksm-k8s-port))
+  .properties.k8s_server:
+    value: ((ksm-k8s-endpoint))
+  .properties.secret_access_key:
+    value:
+      secret: ((ksm-storage-secret-access-key))
+#  .properties.store_bind_credentials:
+#    value: ((store_bind_credentials))
+  .properties.token:
+    value: ((ksm-k8s-token))
+  .properties.registry_password:
+    value: ((ksm-container-password))
+  .properties.registry_server:
+    value: ((ksm-container-repo))
+  .properties.registry_username:
+    value: ((ksm-container-user))
+resource-config:
+  spring-cloud-services:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: true
+  deregistrar:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: true
+  ksm:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: true
+  uaa_crud_delete:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: true
+errand-config:
+  deregistrar:
+    pre-delete-state: true
+  uaa_crud_delete:
+    pre-delete-state: true

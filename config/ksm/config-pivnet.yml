@@ -1,0 +1,6 @@
+---
+pivnet-api-token: ((pivnet-api-token))
+pivnet-file-glob: ksm-*.pivotal
+pivnet-product-slug: container-services-manager
+product-version-regex: 0\.7\.(.*)
+stemcell-iaas: google
