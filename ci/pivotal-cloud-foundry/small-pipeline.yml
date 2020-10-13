@@ -324,7 +324,7 @@ jobs:
       config: config
     params:
       ENV_FILE: config/ops-manager/env.yml
-      OPSMAN_CONFIG_FILE: config/ops-manager/opsman.yml
+      OPSMAN_CONFIG_FILE: config/ops-manager/config.yml
   - task: apply-director-changes
     image: platform-automation-image
     file: platform-automation-tasks/tasks/apply-director-changes.yml
