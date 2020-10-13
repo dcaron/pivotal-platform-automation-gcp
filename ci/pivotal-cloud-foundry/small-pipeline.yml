@@ -306,16 +306,25 @@ jobs:
   - put: state
     params:
       file: generated-state/state.yml
-  - task: update-ssl-certificate
+#  - task: update-ssl-certificate
+#    image: platform-automation-image
+#    file: config/config/tasks/update-opsman-ssl.yml
+#    input_mapping:
+#      state: state
+#      config: config
+#      env: config
+#      vars: config
+#    params:
+#      ENV_FILE: config/ops-manager/env.yml
+  - task: configure-opsman
     image: platform-automation-image
-    file: config/config/tasks/update-opsman-ssl.yml
+    file: platform-automation-tasks/tasks/configure-opsman.yml
     input_mapping:
-      state: state
-      config: config
       env: config
-      vars: config
+      config: config
     params:
       ENV_FILE: config/ops-manager/env.yml
+      OPSMAN_CONFIG_FILE: config/ops-manager/opsman.yml
   - task: apply-director-changes
     image: platform-automation-image
     file: platform-automation-tasks/tasks/apply-director-changes.yml

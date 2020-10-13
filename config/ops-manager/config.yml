@@ -1,0 +1,3 @@
+ssl-certificate:
+  certificate: ((domain-crt))
+  private_key: ((domain-key))
