@@ -88,22 +88,6 @@ resources:
     json_key: |
       ((gcp-credentials))
 
-- name: rabbitmq-product
-  type: gcs
-  source:
-    regexp: p-rabbitmq-(.*).pivotal
-    bucket: ((gcs-bucket))
-    json_key: |
-      ((gcp-credentials))
-
-- name: rabbitmq-stemcell
-  type: gcs
-  source:
-    regexp: rabbitmq-stemcell/light-bosh-stemcell-(.*)-google.*\.tgz
-    bucket: ((gcs-bucket))
-    json_key: |
-      ((gcp-credentials))
-
 - name: pas-product
   type: gcs
   source:
@@ -116,22 +100,6 @@ resources:
   type: gcs
   source:
     regexp: pas-stemcell/light-bosh-stemcell-(.*)-google.*\.tgz
-    bucket: ((gcs-bucket))
-    json_key: |
-      ((gcp-credentials))
-
-- name: mysql-product
-  type: gcs
-  source:
-    regexp: pivotal-mysql-(.*).pivotal
-    bucket: ((gcs-bucket))
-    json_key: |
-      ((gcp-credentials))
-
-- name: mysql-stemcell
-  type: gcs
-  source:
-    regexp: mysql-stemcell/light-bosh-stemcell-(.*)-google.*\.tgz
     bucket: ((gcs-bucket))
     json_key: |
       ((gcp-credentials))
@@ -217,7 +185,7 @@ jobs:
       config: config
       vars: config
     params:
-      OPSMAN_CONFIG_FILE: config/ops-manager/2.8/gcp/config-vm.yml
+      OPSMAN_CONFIG_FILE: config/ops-manager/2.10/gcp/config-vm.yml
   - put: state
     params:
       file: generated-state/state.yml
@@ -240,7 +208,7 @@ jobs:
       vars: config
     params:
       ENV_FILE: config/ops-manager/env.yml
-      DIRECTOR_CONFIG_FILE: config/ops-manager/2.8/gcp/config.yml
+      DIRECTOR_CONFIG_FILE: config/ops-manager/2.10/gcp/config.yml
   - task: apply-director-changes
     image: platform-automation-image
     file: platform-automation-tasks/tasks/apply-director-changes.yml
@@ -334,7 +302,7 @@ jobs:
       vars: config
     params:
       ENV_FILE: config/ops-manager/env.yml
-      OPSMAN_CONFIG_FILE: config/ops-manager/2.8/gcp/config-vm.yml
+      OPSMAN_CONFIG_FILE: config/ops-manager/2.10/gcp/config-vm.yml
   - put: state
     params:
       file: generated-state/state.yml
@@ -548,104 +516,6 @@ jobs:
     params:
       ENV_FILE: config/ops-manager/env.yml
 
-
-
-- name: upload-and-stage-rabbitmq
-  serial: true
-  serial_groups: [ install ]
-  plan:
-  - in_parallel:
-    - get: platform-automation-image
-      params:
-        unpack: true
-      passed:
-        - upgrade-opsman
-      trigger: true
-    - get: platform-automation-tasks
-      params:
-        unpack: true
-    - get: rabbitmq-product
-      trigger: true
-    - get: config
-  - task: credhub-interpolate-config
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/credhub-interpolate.yml
-    params:
-      CREDHUB_CA_CERT: ((credhub-ca-cert))
-      CREDHUB_CLIENT: ((credhub-client))
-      CREDHUB_SECRET: ((credhub-secret))
-      CREDHUB_SERVER: ((credhub-server))
-      PREFIX: /
-      INTERPOLATION_PATH: config
-    input_mapping:
-      files: config
-    output_mapping:
-      interpolated-files: config
-  - task: upload-product
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/upload-product.yml
-    input_mapping:
-      product: rabbitmq-product
-      env: config
-    params:
-      ENV_FILE: config/ops-manager/env.yml
-  - task: stage-product
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/stage-product.yml
-    input_mapping:
-      product: rabbitmq-product
-      env: config
-    params:
-      ENV_FILE: config/ops-manager/env.yml
-
-- name: upload-and-stage-mysql
-  serial: true
-  serial_groups: [ install ]
-  plan:
-  - in_parallel:
-    - get: platform-automation-image
-      params:
-        unpack: true
-      passed:
-        - upgrade-opsman
-      trigger: true
-    - get: platform-automation-tasks
-      params:
-        unpack: true
-    - get: mysql-product
-      trigger: true
-    - get: config
-  - task: credhub-interpolate-config
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/credhub-interpolate.yml
-    params:
-      CREDHUB_CA_CERT: ((credhub-ca-cert))
-      CREDHUB_CLIENT: ((credhub-client))
-      CREDHUB_SECRET: ((credhub-secret))
-      CREDHUB_SERVER: ((credhub-server))
-      PREFIX: /
-      INTERPOLATION_PATH: config
-    input_mapping:
-      files: config
-    output_mapping:
-      interpolated-files: config
-  - task: upload-product
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/upload-product.yml
-    input_mapping:
-      product: mysql-product
-      env: config
-    params:
-      ENV_FILE: config/ops-manager/env.yml
-  - task: stage-product
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/stage-product.yml
-    input_mapping:
-      product: mysql-product
-      env: config
-    params:
-      ENV_FILE: config/ops-manager/env.yml
-
 - name: upload-and-stage-scs3
   serial: true
   serial_groups: [ install ]
@@ -781,7 +651,7 @@ jobs:
         env: config
         vars: config
       params:
-        CONFIG_FILE: config/pivotal-container-service/1.6/config.yml
+        CONFIG_FILE: config/pivotal-container-service/1.9/config.yml
         ENV_FILE: config/ops-manager/env.yml
 
 - name: configure-harbor
@@ -825,7 +695,7 @@ jobs:
       env: config
       vars: config
     params:
-      CONFIG_FILE: config/harbor-container-registry/1.10/config.yml
+      CONFIG_FILE: config/harbor-container-registry/2.0/config.yml
       ENV_FILE: config/ops-manager/env.yml
 
 - name: configure-pas
@@ -869,95 +739,7 @@ jobs:
       env: config
       vars: config
     params:
-      CONFIG_FILE: config/cf/2.8/config.yml
-      ENV_FILE: config/ops-manager/env.yml
-
-- name: configure-rabbitmq
-  serial: true
-  serial_groups: [ install ]
-  plan:
-  - in_parallel:
-    - get: platform-automation-image
-      params:
-        unpack: true
-      passed:
-        - upload-and-stage-rabbitmq
-      trigger: true
-    - get: platform-automation-tasks
-      params:
-        unpack: true
-    - get: config
-    - get: rabbitmq-product
-      passed:
-        - upload-and-stage-rabbitmq
-      trigger: true
-  - task: credhub-interpolate-config
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/credhub-interpolate.yml
-    params:
-      CREDHUB_CA_CERT: ((credhub-ca-cert))
-      CREDHUB_CLIENT: ((credhub-client))
-      CREDHUB_SECRET: ((credhub-secret))
-      CREDHUB_SERVER: ((credhub-server))
-      PREFIX: /
-      INTERPOLATION_PATH: config
-    input_mapping:
-      files: config
-    output_mapping:
-      interpolated-files: config
-  - task: configure-rabbitmq
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/configure-product.yml
-    input_mapping:
-      config: config
-      env: config
-      vars: config
-    params:
-      CONFIG_FILE: config/p-rabbitmq/1.18/config.yml
-      ENV_FILE: config/ops-manager/env.yml
-
-- name: configure-mysql
-  serial: true
-  serial_groups: [ install ]
-  plan:
-  - in_parallel:
-    - get: platform-automation-image
-      params:
-        unpack: true
-      passed:
-        - upload-and-stage-mysql
-      trigger: true
-    - get: platform-automation-tasks
-      params:
-        unpack: true
-    - get: config
-    - get: mysql-product
-      passed:
-        - upload-and-stage-mysql
-      trigger: true
-  - task: credhub-interpolate-config
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/credhub-interpolate.yml
-    params:
-      CREDHUB_CA_CERT: ((credhub-ca-cert))
-      CREDHUB_CLIENT: ((credhub-client))
-      CREDHUB_SECRET: ((credhub-secret))
-      CREDHUB_SERVER: ((credhub-server))
-      PREFIX: /
-      INTERPOLATION_PATH: config
-    input_mapping:
-      files: config
-    output_mapping:
-      interpolated-files: config
-  - task: configure-mysql
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/configure-product.yml
-    input_mapping:
-      config: config
-      env: config
-      vars: config
-    params:
-      CONFIG_FILE: config/pivotal-mysql/2.7/config.yml
+      CONFIG_FILE: config/cf/2.10/config.yml
       ENV_FILE: config/ops-manager/env.yml
 
 - name: configure-scs3
@@ -1004,8 +786,6 @@ jobs:
         CONFIG_FILE: config/p-scs/3.1/config.yml
         ENV_FILE: config/ops-manager/env.yml
 
-
-
 - name: upload-stemcells
   serial: true
   plan:
@@ -1019,9 +799,7 @@ jobs:
         - configure-pks
         - configure-harbor
         - configure-pas
-        - configure-mysql
         - configure-scs3
-        - configure-rabbitmq
       trigger: true
     - get: platform-automation-tasks
       params:
@@ -1033,10 +811,6 @@ jobs:
     - get: harbor-stemcell
       trigger: true
     - get: pas-stemcell
-      trigger: true
-    - get: rabbitmq-stemcell
-      trigger: true
-    - get: mysql-stemcell
       trigger: true
     - get: scs3-stemcell
       trigger: true
@@ -1087,22 +861,6 @@ jobs:
       stemcell: pas-stemcell
     params:
       ENV_FILE: config/ops-manager/env.yml
-  - task: upload-rabbitmq-stemcell
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/upload-stemcell.yml
-    input_mapping:
-      env: config
-      stemcell: rabbitmq-stemcell
-    params:
-      ENV_FILE: config/ops-manager/env.yml
-  - task: upload-mysql-stemcell
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/upload-stemcell.yml
-    input_mapping:
-      env: config
-      stemcell: mysql-stemcell
-    params:
-      ENV_FILE: config/ops-manager/env.yml
   - task: upload-scs3-stemcell
     image: platform-automation-image
     file: platform-automation-tasks/tasks/upload-stemcell.yml
@@ -1124,8 +882,6 @@ jobs:
         - configure-pks
         - configure-harbor
         - configure-pas
-        - configure-mysql
-        - configure-rabbitmq
         - configure-scs3
         - upload-stemcells
       trigger: true
