@@ -38,14 +38,16 @@ product-properties:
       - ((az2))
       - ((az3))
   .properties.plan2_selector.active.master_instances:
-    value: 3
+    value: 1
   .properties.plan2_selector.active.worker_az_placement:
     value:
       - ((az1))
       - ((az2))
       - ((az3))
   .properties.plan2_selector.active.worker_instances:
-    value: 5
+    value: 1
+  .properties.plan2_selector.active.allow_privileged_containers:
+    value: true
   .properties.plan3_selector:
     value: Plan Inactive
   .properties.cloud_provider:
