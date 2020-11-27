@@ -40,21 +40,6 @@ resources:
     json_key: |
       ((gcp-credentials))
 
-- name: sso-product
-  type: gcs
-  source:
-    regexp: Pivotal_Single_Sign-On_Service_(.*).pivotal
-    bucket: ((gcs-bucket))
-    json_key: |
-      ((gcp-credentials))
-
-- name: sso-stemcell
-  type: gcs
-  source:
-    regexp: sso-stemcell/light-bosh-stemcell-(.*)-google.*\.tgz
-    bucket: ((gcs-bucket))
-    json_key: |
-      ((gcp-credentials))
 
 - name: pks-product
   type: gcs
@@ -333,54 +318,6 @@ jobs:
     params:
       ENV_FILE: config/ops-manager/env.yml
 
-- name: upload-and-stage-sso
-  serial: true
-  serial_groups: [ install ]
-  plan:
-    - in_parallel:
-        - get: platform-automation-image
-          params:
-            unpack: true
-          passed:
-            - upgrade-opsman
-          trigger: true
-        - get: platform-automation-tasks
-          params:
-            unpack: true
-        - get: sso-product
-          trigger: true
-        - get: config
-    - task: credhub-interpolate-config
-      image: platform-automation-image
-      file: platform-automation-tasks/tasks/credhub-interpolate.yml
-      params:
-        CREDHUB_CA_CERT: ((credhub-ca-cert))
-        CREDHUB_CLIENT: ((credhub-client))
-        CREDHUB_SECRET: ((credhub-secret))
-        CREDHUB_SERVER: ((credhub-server))
-        PREFIX: /
-        INTERPOLATION_PATH: config
-      input_mapping:
-        files: config
-      output_mapping:
-        interpolated-files: config
-    - task: upload-product
-      image: platform-automation-image
-      file: platform-automation-tasks/tasks/upload-product.yml
-      input_mapping:
-        product: sso-product
-        env: config
-      params:
-        ENV_FILE: config/ops-manager/env.yml
-    - task: stage-product
-      image: platform-automation-image
-      file: platform-automation-tasks/tasks/stage-product.yml
-      input_mapping:
-        product: sso-product
-        env: config
-      params:
-        ENV_FILE: config/ops-manager/env.yml
-
 - name: upload-and-stage-pks
   serial: true
   serial_groups: [ install ]
@@ -575,49 +512,6 @@ jobs:
 
 # CONFIGURARTIONS
 
-- name: configure-sso
-  serial: true
-  serial_groups: [ install ]
-  plan:
-  - in_parallel:
-    - get: platform-automation-image
-      params:
-        unpack: true
-      passed:
-        - upload-and-stage-sso
-      trigger: true
-    - get: platform-automation-tasks
-      params:
-        unpack: true
-    - get: config
-    - get: sso-product
-      passed:
-        - upload-and-stage-sso
-      trigger: true
-  - task: credhub-interpolate-config
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/credhub-interpolate.yml
-    params:
-      CREDHUB_CA_CERT: ((credhub-ca-cert))
-      CREDHUB_CLIENT: ((credhub-client))
-      CREDHUB_SECRET: ((credhub-secret))
-      CREDHUB_SERVER: ((credhub-server))
-      PREFIX: /
-      INTERPOLATION_PATH: config
-    input_mapping:
-      files: config
-    output_mapping:
-      interpolated-files: config
-  - task: configure-sso
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/configure-product.yml
-    input_mapping:
-      config: config
-      env: config
-      vars: config
-    params:
-      CONFIG_FILE: config/p-identity/1/config.yml
-      ENV_FILE: config/ops-manager/env.yml
 
 - name: configure-pks
   serial: true
@@ -804,7 +698,6 @@ jobs:
         unpack: true
       passed:
         - upgrade-opsman
-        - configure-sso
         - configure-pks
         - configure-harbor
         - configure-pas
@@ -813,8 +706,6 @@ jobs:
     - get: platform-automation-tasks
       params:
         unpack: true
-    - get: sso-stemcell
-      trigger: true
     - get: pks-stemcell
       trigger: true
     - get: harbor-stemcell
@@ -838,14 +729,6 @@ jobs:
       files: config
     output_mapping:
       interpolated-files: config
-  - task: upload-sso-stemcell
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/upload-stemcell.yml
-    input_mapping:
-      env: config
-      stemcell: sso-stemcell
-    params:
-      ENV_FILE: config/ops-manager/env.yml
   - task: upload-pks-stemcell
     image: platform-automation-image
     file: platform-automation-tasks/tasks/upload-stemcell.yml
@@ -887,7 +770,6 @@ jobs:
       params:
         unpack: true
       passed:
-        - configure-sso
         - configure-pks
         - configure-harbor
         - configure-pas
