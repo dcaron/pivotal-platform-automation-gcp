@@ -89,23 +89,6 @@ resources:
     json_key: |
       ((gcp-credentials))
 
-- name: scs3-product
-  type: gcs
-  source:
-    regexp: p_spring-cloud-services-(.*).pivotal
-    bucket: ((gcs-bucket))
-    json_key: |
-      ((gcp-credentials))
-
-- name: scs3-stemcell
-  type: gcs
-  source:
-    regexp: scs3-stemcell/light-bosh-stemcell-(.*)-google.*\.tgz
-    bucket: ((gcs-bucket))
-    json_key: |
-      ((gcp-credentials))
-
-
 - name: platform-automation-tasks
   type: gcs
   source:
@@ -462,53 +445,6 @@ jobs:
     params:
       ENV_FILE: config/ops-manager/env.yml
 
-- name: upload-and-stage-scs3
-  serial: true
-  serial_groups: [ install ]
-  plan:
-    - in_parallel:
-        - get: platform-automation-image
-          params:
-            unpack: true
-          passed:
-            - upgrade-opsman
-          trigger: true
-        - get: platform-automation-tasks
-          params:
-            unpack: true
-        - get: scs3-product
-          trigger: true
-        - get: config
-    - task: credhub-interpolate-config
-      image: platform-automation-image
-      file: platform-automation-tasks/tasks/credhub-interpolate.yml
-      params:
-        CREDHUB_CA_CERT: ((credhub-ca-cert))
-        CREDHUB_CLIENT: ((credhub-client))
-        CREDHUB_SECRET: ((credhub-secret))
-        CREDHUB_SERVER: ((credhub-server))
-        PREFIX: /
-        INTERPOLATION_PATH: config
-      input_mapping:
-        files: config
-      output_mapping:
-        interpolated-files: config
-    - task: upload-product
-      image: platform-automation-image
-      file: platform-automation-tasks/tasks/upload-product.yml
-      input_mapping:
-        product: scs3-product
-        env: config
-      params:
-        ENV_FILE: config/ops-manager/env.yml
-    - task: stage-product
-      image: platform-automation-image
-      file: platform-automation-tasks/tasks/stage-product.yml
-      input_mapping:
-        product: scs3-product
-        env: config
-      params:
-        ENV_FILE: config/ops-manager/env.yml
 
 # CONFIGURARTIONS
 
@@ -645,50 +581,6 @@ jobs:
       CONFIG_FILE: config/cf/2.10/config.yml
       ENV_FILE: config/ops-manager/env.yml
 
-- name: configure-scs3
-  serial: true
-  serial_groups: [ install ]
-  plan:
-    - in_parallel:
-        - get: platform-automation-image
-          params:
-            unpack: true
-          passed:
-            - upload-and-stage-scs3
-          trigger: true
-        - get: platform-automation-tasks
-          params:
-            unpack: true
-        - get: config
-        - get: scs3-product
-          passed:
-            - upload-and-stage-scs3
-          trigger: true
-    - task: credhub-interpolate-config
-      image: platform-automation-image
-      file: platform-automation-tasks/tasks/credhub-interpolate.yml
-      params:
-        CREDHUB_CA_CERT: ((credhub-ca-cert))
-        CREDHUB_CLIENT: ((credhub-client))
-        CREDHUB_SECRET: ((credhub-secret))
-        CREDHUB_SERVER: ((credhub-server))
-        PREFIX: /
-        INTERPOLATION_PATH: config
-      input_mapping:
-        files: config
-      output_mapping:
-        interpolated-files: config
-    - task: configure-scs3
-      image: platform-automation-image
-      file: platform-automation-tasks/tasks/configure-product.yml
-      input_mapping:
-        config: config
-        env: config
-        vars: config
-      params:
-        CONFIG_FILE: config/p-scs/3.1/config.yml
-        ENV_FILE: config/ops-manager/env.yml
-
 - name: upload-stemcells
   serial: true
   plan:
@@ -701,7 +593,6 @@ jobs:
         - configure-pks
         - configure-harbor
         - configure-pas
-        - configure-scs3
       trigger: true
     - get: platform-automation-tasks
       params:
@@ -711,8 +602,6 @@ jobs:
     - get: harbor-stemcell
       trigger: true
     - get: pas-stemcell
-      trigger: true
-    - get: scs3-stemcell
       trigger: true
     - get: config
   - task: credhub-interpolate-config
@@ -753,14 +642,6 @@ jobs:
       stemcell: pas-stemcell
     params:
       ENV_FILE: config/ops-manager/env.yml
-  - task: upload-scs3-stemcell
-    image: platform-automation-image
-    file: platform-automation-tasks/tasks/upload-stemcell.yml
-    input_mapping:
-      env: config
-      stemcell: scs3-stemcell
-    params:
-      ENV_FILE: config/ops-manager/env.yml
 
 - name: apply-product-changes
   serial: true
@@ -773,7 +654,6 @@ jobs:
         - configure-pks
         - configure-harbor
         - configure-pas
-        - configure-scs3
         - upload-stemcells
       trigger: true
     - get: platform-automation-tasks
